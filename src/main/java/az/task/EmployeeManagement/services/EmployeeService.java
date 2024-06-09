@@ -5,7 +5,6 @@ import az.task.EmployeeManagement.DTOs.EmployeeDto;
 import az.task.EmployeeManagement.mappers.EmployeeMapper;
 import az.task.EmployeeManagement.models.Employee;
 import az.task.EmployeeManagement.repositories.EmployeeRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,16 +14,14 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
-    private final EmployeeMapper employeeMapper;
 
     public EmployeeDto getEmployeeByEmail(String emailAddress) {
         var employee = employeeRepository.findByEmail(emailAddress);
 
         if (employee != null)
-            return employeeMapper.toEmployeeDto(employee);
+            return EmployeeMapper.Instance.toEmployeeDto(employee);
         else
             return null;
 
@@ -48,7 +45,7 @@ public class EmployeeService {
     }
 
     public Employee createEmployee(EmployeeDto employeeDTO) {
-        var employee = employeeMapper.toEmployee(employeeDTO);
+        var employee = EmployeeMapper.Instance.toEmployee(employeeDTO);
         employeeRepository.save(employee);
         return employee;
 
@@ -87,7 +84,7 @@ public class EmployeeService {
         if (optionalExistingEmployee.isPresent()) {
             Employee existingEmployee = optionalExistingEmployee.get();
 
-            existingEmployee = employeeMapper.toEmployee(employeeDTO);
+            existingEmployee = EmployeeMapper.Instance.toEmployee(employeeDTO);
             employeeRepository.save(existingEmployee);
             return id;
         }
