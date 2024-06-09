@@ -42,7 +42,7 @@ public class EmployeeController {
                 .buildAndExpand(createdEmployee.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(createdEmployee);
     }
 
     @PutMapping("/update/{id}")

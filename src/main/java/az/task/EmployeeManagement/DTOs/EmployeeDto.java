@@ -5,12 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-@Data
 @Builder
+@Data
 @AllArgsConstructor
 public class EmployeeDto {
-
-
     public Long id;
     public String name;
     public String surname;

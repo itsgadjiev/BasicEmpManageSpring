@@ -2,10 +2,11 @@ package az.task.EmployeeManagement.services;
 
 
 import az.task.EmployeeManagement.DTOs.EmployeeDto;
+import az.task.EmployeeManagement.mappers.EmployeeMapper;
 import az.task.EmployeeManagement.models.Employee;
 import az.task.EmployeeManagement.repositories.EmployeeRepository;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,27 +14,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @AllArgsConstructor
 public class EmployeeService {
-
-    private EmployeeRepository employeeRepository;
-    private ModelMapper modelMapper;
-
-    public EmployeeDto mapToDTO(Employee employee) {
-        return modelMapper.map(employee, EmployeeDto.class);
-    }
-
-    public Employee mapToEntity(EmployeeDto employeeDTO) {
-        return modelMapper.map(employeeDTO, Employee.class);
-    }
+    private final EmployeeRepository employeeRepository;
+    private final EmployeeMapper employeeMapper;
 
     public EmployeeDto getEmployeeByEmail(String emailAddress) {
         var employee = employeeRepository.findByEmail(emailAddress);
 
         if (employee != null)
-            return mapToDTO(employee);
+            return employeeMapper.toEmployeeDto(employee);
         else
             return null;
+
     }
 
     public List<EmployeeDto> getAllEmployees(String name, String surname) {
@@ -45,17 +39,20 @@ public class EmployeeService {
 
 
         List<EmployeeDto> emps = filteredEmployees.stream()
-                .map(this::mapToDTO)
+                .map(EmployeeMapper.Instance::toEmployeeDto)
                 .collect(Collectors.toList());
 
         return emps;
 
+
     }
 
     public Employee createEmployee(EmployeeDto employeeDTO) {
-        var employee = mapToEntity(employeeDTO);
+        var employee = employeeMapper.toEmployee(employeeDTO);
         employeeRepository.save(employee);
         return employee;
+
+
     }
 
     public void deleteEmployee(Long id) {
@@ -67,16 +64,30 @@ public class EmployeeService {
     }
 
 
+//    public Long updateEmployee(Long id, EmployeeDto employeeDTO) {
+//        Optional<Employee> optionalExistingEmployee = employeeRepository.findById(id);
+//
+//        if (optionalExistingEmployee.isPresent()) {
+//            Employee existingEmployee = optionalExistingEmployee.get();
+//
+//            existingEmployee.setName(employeeDTO.getName());
+//            existingEmployee.setEmail(employeeDTO.getEmail());
+//            existingEmployee.setSurname(employeeDTO.getSurname());
+//
+//            employeeRepository.save(existingEmployee);
+//            return id;
+//        }
+//
+//        return null;
+//    }
+
     public Long updateEmployee(Long id, EmployeeDto employeeDTO) {
         Optional<Employee> optionalExistingEmployee = employeeRepository.findById(id);
 
         if (optionalExistingEmployee.isPresent()) {
             Employee existingEmployee = optionalExistingEmployee.get();
 
-            existingEmployee.setName(employeeDTO.getName());
-            existingEmployee.setEmail(employeeDTO.getEmail());
-            existingEmployee.setSurname(employeeDTO.getSurname());
-
+            existingEmployee = employeeMapper.toEmployee(employeeDTO);
             employeeRepository.save(existingEmployee);
             return id;
         }
