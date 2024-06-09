@@ -1,9 +1,9 @@
 package az.task.EmployeeManagement.controllers;
 
+
 import az.task.EmployeeManagement.DTOs.EmployeeDto;
 import az.task.EmployeeManagement.models.Employee;
 import az.task.EmployeeManagement.services.EmployeeService;
-import az.task.EmployeeManagement.services.LogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,21 +18,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EmployeeController {
 
-    private final LogService logService;
     private final EmployeeService employeeService;
 
-    @GetMapping
+    @GetMapping("/getAllEmployees")
     public ResponseEntity<List<EmployeeDto>> getAllEmployees(@RequestParam(required = false) String name,
-                                             @RequestParam(required = false) String surname) {
-        return ResponseEntity.ok(employeeService.getAllEmployees(name, surname));
+                                                             @RequestParam(required = false) String surname) {
+        List<EmployeeDto> employees = employeeService.getAllEmployees(name, surname);
+        return ResponseEntity.ok(employees);
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<EmployeeDto> getEmployeeByEmail(@RequestParam String emailAddress) {
+    @GetMapping("/get/{emailAddress}")
+    public ResponseEntity<EmployeeDto> getEmployeeByEmail(@PathVariable String emailAddress) {
         return ResponseEntity.ok(employeeService.getEmployeeByEmail(emailAddress));
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity createEmployee(@RequestBody EmployeeDto employeeDTO) {
         Employee createdEmployee = employeeService.createEmployee(employeeDTO);
 
@@ -45,12 +45,12 @@ public class EmployeeController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Long> updateEmployee(@PathVariable Long id, @RequestBody EmployeeDto employeeDTO) {
         return ResponseEntity.ok(employeeService.updateEmployee(id, employeeDTO));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
         return ResponseEntity.noContent().build();

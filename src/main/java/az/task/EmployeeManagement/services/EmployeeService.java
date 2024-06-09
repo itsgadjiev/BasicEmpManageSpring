@@ -1,5 +1,6 @@
 package az.task.EmployeeManagement.services;
 
+
 import az.task.EmployeeManagement.DTOs.EmployeeDto;
 import az.task.EmployeeManagement.models.Employee;
 import az.task.EmployeeManagement.repositories.EmployeeRepository;
@@ -36,15 +37,18 @@ public class EmployeeService {
     }
 
     public List<EmployeeDto> getAllEmployees(String name, String surname) {
-         List<Employee> filteredEmployees = employeeRepository.findAll()
+        List<Employee> filteredEmployees = employeeRepository.findAll()
                 .stream()
-                .filter(employee -> (name == null || employee.getName().equals(name)))
-                .filter(employee -> (surname == null || employee.getSurname().equals(surname)))
+                .filter(employee -> (name == null || employee.getName().contains(name)))
+                .filter(employee -> (surname == null || employee.getSurname().contains(surname)))
                 .collect(Collectors.toList());
 
-        return filteredEmployees.stream()
+
+        List<EmployeeDto> emps = filteredEmployees.stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
+
+        return emps;
 
     }
 
@@ -62,6 +66,7 @@ public class EmployeeService {
 
     }
 
+
     public Long updateEmployee(Long id, EmployeeDto employeeDTO) {
         Optional<Employee> optionalExistingEmployee = employeeRepository.findById(id);
 
@@ -72,6 +77,7 @@ public class EmployeeService {
             existingEmployee.setEmail(employeeDTO.getEmail());
             existingEmployee.setSurname(employeeDTO.getSurname());
 
+            employeeRepository.save(existingEmployee);
             return id;
         }
 

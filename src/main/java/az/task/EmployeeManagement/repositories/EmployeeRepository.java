@@ -1,5 +1,6 @@
 package az.task.EmployeeManagement.repositories;
 
+
 import az.task.EmployeeManagement.models.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 
